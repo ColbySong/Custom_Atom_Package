@@ -1,6 +1,7 @@
 'use babel';
 
-import { CompositeDisposable } from 'atom'
+import { CompositeDisposable } from 'atom';
+import request from 'request';
 
 export default {
 
@@ -21,9 +22,16 @@ export default {
   fetch() {
     let editor
     if (editor = atom.workspace.getActiveTextEditor()) {
-      let selection = editor.getSelectedText()
-      selection = selection.split('').reverse().join('')
-      editor.insertText(selection)
+      let selection = editor.getSelectedText();
+      this.download(selection);
     }
+  },
+
+  download(url) {
+    request(url, (error, response, body) => {
+      if (!error && response.statusCode == 200) {
+        console.log(body);
+      }
+    })
   }
 };
