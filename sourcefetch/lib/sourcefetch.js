@@ -63,7 +63,13 @@ export default {
 
   scrape(html) {
     $ = cheerio.load(html);
-    return $('div.accepted-answer pre code').text();
+    if ($('[title='Stack Overflow']').length > 0) {
+      return $('div.accepted-answer pre code').text();
+    } else {
+      let linksNum = $('img').length;
+      console.log(linksNum);
+      return $('img')[Math.floor(Math.random()*linksNum)].src;
+    }
   },
 
   searchCode(query, language) {
@@ -71,7 +77,6 @@ export default {
     return new Promise((resolve, reject) => {
       let searchString = `${query} in ${language} site:stackoverflow.com`;
       console.log(searchString);
-
       google(searchString, (err, res) => {
         console.log(res);
         if (err) {
@@ -93,7 +98,7 @@ export default {
     console.log('searching for image');
     return new Promise((resolve, reject)=> {
       let searchString = `${query} site: imgur`;
-
+      console.log(searchString);
       google(searchString, (err, res) => {
         console.log(res);
         if (err) {
