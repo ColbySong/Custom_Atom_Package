@@ -30,7 +30,7 @@ export default {
       let query = editor.getSelectedText();
       let language = editor.getGrammar().name;
 
-      self.search(query, language).then((url) => {
+      self.searchCode(query, language).then((url) => {
         atom.notifications.addSuccess('Found google results!')
         return self.download(url);
       }).then((html) => {
@@ -66,24 +66,46 @@ export default {
     return $('div.accepted-answer pre code').text();
   },
 
-  search(query, language) {
-    console.log('inside search');
+  searchCode(query, language) {
+    console.log('searching for code');
     return new Promise((resolve, reject) => {
-      let searchString = `${query} in ${language} site:stackoverflow.com`
+      let searchString = `${query} in ${language} site:stackoverflow.com`;
       console.log(searchString);
 
       google(searchString, (err, res) => {
         console.log(res);
         if (err) {
           reject({
-            reason: 'A search error has occured :('
+            reason: 'search error'
           })
         } else if (res.links.length === 0) {
           reject({
-            reason: 'No results found :('
+            reason: 'no results found'
           })
         } else {
-          resolve(res.links[0].href)
+          resolve(res.links[0].href);
+        }
+      })
+    })
+  },
+
+  searchImage(query) {
+    console.log('searching for image');
+    return new Promise((resolve, reject)=> {
+      let searchString = `${query} site: imgur`;
+
+      google(searchString, (err, res) => {
+        console.log(res);
+        if (err) {
+          reject({
+            reason: 'search error'
+          })
+        } else if (res.links.length === 0) {
+          reject({
+            reason: 'no results found'
+          })
+        } else {
+          resolve(res.links[0].href);
         }
       })
     })
