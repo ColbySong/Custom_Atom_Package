@@ -23,15 +23,24 @@ export default {
     let editor
     if (editor = atom.workspace.getActiveTextEditor()) {
       let selection = editor.getSelectedText();
-      this.download(selection);
+      this.download(selection).then((htmlResponse) => {
+        editor.insertText(htmlResponse);
+      }).catch((error) => {
+        atom.notifications.addWarning(error.reason);
+      });
     }
   },
 
   download(url) {
-    request(url, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-        console.log(body);
-      }
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+          resolve(body)
+        } else {
+          reject({
+            reason: 'Unable to download page'
+          })
+        }
+      })
     })
-  }
 };
