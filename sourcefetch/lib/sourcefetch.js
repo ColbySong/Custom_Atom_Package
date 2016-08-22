@@ -30,20 +30,38 @@ export default {
       let query = editor.getSelectedText();
       let language = editor.getGrammar().name;
 
-      self.searchCode(query, language).then((url) => {
-        atom.notifications.addSuccess('Found google results!')
-        return self.download(url);
-      }).then((html) => {
-        let answer = self.scrape(html);
-        if (answer === '') {
-          atom.notifications.addWarning('No answer found :(');
-        } else {
-          atom.notifications.addSuccess('Found snippet!');
-          editor.insertText(answer);
-        }
-      }).catch((error) => {
-        atom.notifications.addWarning(error.reason);
-      })
+      // check what kind of query user input
+      let queryWords = query.split(" ");
+      if (queryWords[0] === 'Image:') {
+          self.download('http://imgur.com/r/' + queryWords[1]).then((html) => {
+            let answer = self.scrape(html);
+            console.log(answer);
+          if (answer === '') {
+            atom.notifications.addWarning('No answer found :(');
+          } else {
+            atom.notifications.addSuccess('Found snippet!');
+            editor.insertText(answer);
+          }
+        }).catch((error) => {
+          atom.notifications.addWarning(error.reason);
+        })
+      } else {
+        self.searchCode(query, language).then((url) => {
+          atom.notifications.addSuccess('Found google results!')
+          return self.download(url);
+        }).then((html) => {
+          let answer = self.scrape(html);
+          console.log(answer);
+          if (answer === '') {
+            atom.notifications.addWarning('No answer found :(');
+          } else {
+            atom.notifications.addSuccess('Found snippet!');
+            editor.insertText(answer);
+          }
+        }).catch((error) => {
+          atom.notifications.addWarning(error.reason);
+        })
+      }
     }
   },
 
@@ -63,12 +81,13 @@ export default {
 
   scrape(html) {
     $ = cheerio.load(html);
-    if ($('[title='Stack Overflow']').length > 0) {
+    if ($('[title="Stack Overflow"]').length > 0) {
       return $('div.accepted-answer pre code').text();
     } else {
-      let linksNum = $('img').length;
+      let linksNum = $("img").length;
       console.log(linksNum);
-      return $('img')[Math.floor(Math.random()*linksNum)].src;
+      let imgURL = $("img")[Math.floor(Math.random()*linksNum)].attribs.src.slice(2);
+      return imgURL;
     }
   },
 
