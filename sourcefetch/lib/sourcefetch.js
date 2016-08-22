@@ -2,6 +2,7 @@
 
 import { CompositeDisposable } from 'atom';
 import request from 'request';
+import cheerio from 'cheerio';
 
 export default {
 
@@ -20,11 +21,17 @@ export default {
   },
 
   fetch() {
-    let editor
+    let editor;
+    let self = this;
     if (editor = atom.workspace.getActiveTextEditor()) {
       let selection = editor.getSelectedText();
       this.download(selection).then((htmlResponse) => {
-        editor.insertText(htmlResponse);
+        let answer = self.scrape(htmlResponse);
+        if (answer) {
+          editor.insertText(answer);
+        } else {
+          atom.notifications.addWarning('No answer found');
+        }
       }).catch((error) => {
         atom.notifications.addWarning(error.reason);
       });
@@ -43,5 +50,10 @@ export default {
         }
       })
     })
+  },
+
+  scrape(html) {
+    $ = cheerio.load(html);
+    return $('div.accepted-answer pre code').text();
   }
 }
