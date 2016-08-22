@@ -3,6 +3,8 @@
 import { CompositeDisposable } from 'atom';
 import request from 'request';
 import cheerio from 'cheerio';
+import google from 'google';
+google.resultsPerPage = 1;
 
 export default {
 
@@ -55,5 +57,24 @@ export default {
   scrape(html) {
     $ = cheerio.load(html);
     return $('div.accepted-answer pre code').text();
+  },
+
+  search(query, language) {
+    return new Promise((resolve, reject) => {
+      let searchString = `${query} in ${language} site:stackoverflow.com`;
+      google(searchString, (err, res) => {
+        if (err) {
+          reject({
+            reason: 'A search error has occured'
+          })
+        } else if (res.links.length === 0) {
+          reject({
+            reason: 'No results found'
+          })
+        } else {
+          resolve(res.links[0].href)
+        }
+      })
+    })
   }
 }
