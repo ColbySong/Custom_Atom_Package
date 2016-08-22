@@ -32,10 +32,12 @@ export default {
 
       // check what kind of query user input
       let queryWords = query.split(" ");
-      if (queryWords[0] === 'Image:') {
-          self.download('http://imgur.com/r/' + queryWords[1]).then((html) => {
-            let answer = self.scrape(html);
-            console.log(answer);
+      if (queryWords[0] === 'image:') {
+        console.log("looking for " + queryWords[1] + " Images");
+        console.log("link: " + 'http://imgur.com/r/' + queryWords[1]);
+        self.download('http://imgur.com/r/' + queryWords[1]).then((html) => {
+          let answer = self.scrape(html);
+          console.log(answer);
           if (answer === '') {
             atom.notifications.addWarning('No answer found :(');
           } else {
@@ -95,28 +97,6 @@ export default {
     console.log('searching for code');
     return new Promise((resolve, reject) => {
       let searchString = `${query} in ${language} site:stackoverflow.com`;
-      console.log(searchString);
-      google(searchString, (err, res) => {
-        console.log(res);
-        if (err) {
-          reject({
-            reason: 'search error'
-          })
-        } else if (res.links.length === 0) {
-          reject({
-            reason: 'no results found'
-          })
-        } else {
-          resolve(res.links[0].href);
-        }
-      })
-    })
-  },
-
-  searchImage(query) {
-    console.log('searching for image');
-    return new Promise((resolve, reject)=> {
-      let searchString = `${query} site: imgur`;
       console.log(searchString);
       google(searchString, (err, res) => {
         console.log(res);
