@@ -25,18 +25,25 @@ export default {
   fetch() {
     let editor;
     let self = this;
+
     if (editor = atom.workspace.getActiveTextEditor()) {
-      let selection = editor.getSelectedText();
-      this.download(selection).then((htmlResponse) => {
-        let answer = self.scrape(htmlResponse);
-        if (answer) {
-          editor.insertText(answer);
+      let query = editor.getSelectedText();
+      let language = editor.getGrammar().name;
+
+      self.search(query, language).then((url) => {
+        atom.notifications.addSuccess('Found google results!')
+        return self.download(url);
+      }).then((html) => {
+        let answer = self.scrape(html);
+        if (answer === '') {
+          atom.notifications.addWarning('No answer found :(');
         } else {
-          atom.notifications.addWarning('No answer found');
+          atom.notifications.addSuccess('Found snippet!');
+          editor.insertText(answer);
         }
       }).catch((error) => {
         atom.notifications.addWarning(error.reason);
-      });
+      })
     }
   },
 
@@ -60,16 +67,20 @@ export default {
   },
 
   search(query, language) {
+    console.log('inside search');
     return new Promise((resolve, reject) => {
-      let searchString = `${query} in ${language} site:stackoverflow.com`;
+      let searchString = `${query} in ${language} site:stackoverflow.com`
+      console.log(searchString);
+
       google(searchString, (err, res) => {
+        console.log(res);
         if (err) {
           reject({
-            reason: 'A search error has occured'
+            reason: 'A search error has occured :('
           })
         } else if (res.links.length === 0) {
           reject({
-            reason: 'No results found'
+            reason: 'No results found :('
           })
         } else {
           resolve(res.links[0].href)
