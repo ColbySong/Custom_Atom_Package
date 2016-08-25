@@ -1,3 +1,4 @@
 # Custom Atom Package
-custom atom plugin written in ES6 which find image urls or code from stackoverflow based on user query.
-Extended upon tutorial by https://github.com/NickTikhonov/sourcefetch-tutorial
+Custom [Atom](https://atom.io) plugin written in ES6 which finds image URLs or code from Stack Overflow based on user queries.
+
+Extended upon [Nick Tikhonov's tutorial](https://github.com/NickTikhonov/sourcefetch-tutorial).
