@@ -4,5 +4,5 @@ Custom [Atom](https://atom.io) plugin written in ES6 which finds image URLs or c
 Extended upon [Nick Tikhonov's tutorial](https://github.com/NickTikhonov/sourcefetch-tutorial).
 
 <p align="center">
-<img align="center" src="https://media.giphy.com/media/l0HlLINC7e9h5cUcE/giphy.gif" width="100%" alt="API Giphy logo"/>
+<img align="center" src="/codeSearch.gif" width="100%" alt="API Giphy logo"/>
 </p>
